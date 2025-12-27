@@ -1,17 +1,17 @@
+// Plik konfiguracyjny - przechowuje parametry programu oraz obsluguje debugowanie
+
 #ifndef CONFIG_H
 #define CONFIG_H
 
-// ===============================
-// Konfiguracja projektu
-// ===============================
-
-// Nazwa aplikacji
+// Nazwa i wersja
 #define APP_NAME "projekt_grupowy"
-
-// Wersja
 #define APP_VERSION "0.1.0"
 
-// Tryb debug
+// UART
+#define UART_DEVICE "/dev/serial0" // urzadzenie UART
+#define UART_BAUDRATE 115200       // predkosc transmisji
+
+// Debugowanie [1 - DEBUG ON / 0 - DEBUG OFF]
 #define DEBUG 1
 
 #if DEBUG
@@ -22,4 +22,4 @@
     #define DEBUG_PRINT(fmt, ...)
 #endif
 
-#endif // CONFIG_H
+#endif

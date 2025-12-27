@@ -1,6 +1,4 @@
-# ===============================
-# Konfiguracja
-# ===============================
+# Makefile
 
 CC      = gcc
 CFLAGS  = -Wall -Wextra -std=c11 -Iinclude
@@ -12,10 +10,6 @@ OBJ_DIR = build
 
 SRC     = $(wildcard $(SRC_DIR)/*.c)
 OBJ     = $(SRC:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
-
-# ===============================
-# Reguły
-# ===============================
 
 all: $(TARGET)
 
