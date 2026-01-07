@@ -9,7 +9,7 @@
 
 // UART
 #define UART_DEVICE "/dev/serial0" // urzadzenie UART
-#define UART_BAUDRATE 115200       // predkosc transmisji
+#define UART_BAUDRATE 9600         // predkosc transmisji
 
 // Debugowanie [1 - DEBUG ON / 0 - DEBUG OFF]
 #define DEBUG 1

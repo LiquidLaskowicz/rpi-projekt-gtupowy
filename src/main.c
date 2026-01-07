@@ -18,7 +18,6 @@ int main(void)
     char buffor[64]; // buffor na dane z UART
     kierunek_t kierunek = {0, 0}; // struktura przechowujace kierunek
 
-    int active = 0; // zmienna okreslajaca czy z portu przychodza dane (w teorii nie trzeba bo sygnaly beda caly czas ale dodaje z milosci do gry)
 
     uart_file_desc = uart_init(UART_DEVICE, UART_BAUDRATE); // inicjalizacja UART (otwarcie urzadzenia i ustawienie predkoscji transmisji)
 
@@ -41,30 +40,10 @@ int main(void)
 
         // Usuniecie znakow nowej linii
         buffor[strcspn(buffor, "\r\n")] = 0;
-
-
-        // TRYB OCZEKIWANIA
-        if (!active)
-        {
-            if (strcmp(buffor, "START") == 0)
-            {
-                DEBUG_PRINT("Uruchomienie trybu odbioru danych");
-                active = 1;
-            }
-            continue;
-        }
-
-        // TRYB ODBIORU DANYCH
-        if (strcmp(buffor, "STOP")  == 0)
-        {
-            DEBUG_PRINT("Uruchomienie trybu oczekiwania");
-            active = 0;
-            continue;
-        }
     
         int x, y; // zmienne przechowujace dane z ESP
 
-        if (sscanf(buffor, "%d %d", &x, &y) == 2) // proba odczytu dwoch liczb calkowitych z tekstu
+        if (sscanf(buffor, "%d,%d", &x, &y) == 2) // proba odczytu dwoch liczb calkowitych z tekstu
         {
             // przypisanie danych do strunktury kierunku
             kierunek.x = x;
