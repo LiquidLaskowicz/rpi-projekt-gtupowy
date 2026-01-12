@@ -11,7 +11,7 @@
 #include <errno.h>
 
 // Konwersja predkosci transmisji na flage do konfiguracji portu szeregowego
-static predkosc_t baud_to_flag(int baudrate)
+static speed_t baud_to_flag(int baudrate)
 {
     switch (baudrate)
     {
