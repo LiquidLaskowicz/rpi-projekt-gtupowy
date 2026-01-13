@@ -41,19 +41,18 @@ int main(void)
         // Usuniecie znakow nowej linii
         buffor[strcspn(buffor, "\r\n")] = 0;
     
-        int x, y; // zmienne przechowujace dane z ESP
-
-        if (sscanf(buffor, "%d,%d", &x, &y) == 2) // proba odczytu dwoch liczb calkowitych z tekstu
+        int x, y, strzal;
+        if (sscanf(buffor, "%d,%d,%d", &x, &y, &strzal) == 3)
         {
-            // przypisanie danych do strunktury kierunku
             kierunek.x = x;
             kierunek.y = y;
-            
-            DEBUG_PRINT("Kierunek: X=%d Y=%d", kierunek.x, kierunek.y); // wypisanie aktualnego kierunku
+            kierunek.strzal = strzal;
+
+            DEBUG_PRINT("Kierunek: X=%d Y=%d Strzal=%d", kierunek.x, kierunek.y, kierunek.strzal);
         }
         else
         {
-            DEBUG_PRINT("Nieprawidlowe dane: %s", buffor); // blad jesli format danych jest niepoprawny
+            DEBUG_PRINT("Nieprawidlowe dane: %s", buffor);
         }
         
     }

@@ -7,6 +7,7 @@ typedef struct
 {
     int x;
     int y;
+    int strzal;  // 0 = brak, 1 = strzelamy
 } kierunek_t;
 
 #endif
