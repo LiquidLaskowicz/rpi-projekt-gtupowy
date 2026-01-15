@@ -32,13 +32,10 @@ int main(void)
     while(1) //glowna petla programu
     {
 
-        DEBUG_PRINT("Przed czytaniem linii");
         int length = uart_czytaj_linie(uart_file_desc, buffor, sizeof(buffor)); // czyta jedna linie z UART, zapisuje do bufora i zwraca liczbe odczytanych znakow
-        DEBUG_PRINT("Odczytano linie");
 
         if (length <= 0) // sprawdzenie czy cos odebrano
         {
-            DEBUG_PRINT("Nic nie odebrano");
             continue;
         }
 
