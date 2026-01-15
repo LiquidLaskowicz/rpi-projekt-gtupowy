@@ -35,6 +35,7 @@ int main(void)
 
         if (length <= 0) // sprawdzenie czy cos odebrano
         {
+            DEBUG_PRINT("Nic nie odebrano");
             continue;
         }
 
