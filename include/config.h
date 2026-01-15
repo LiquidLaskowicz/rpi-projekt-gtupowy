@@ -8,7 +8,7 @@
 #define APP_VERSION "0.1.0"
 
 // UART
-#define UART_DEVICE "/dev/ttyAMA10" // urzadzenie UART
+#define UART_DEVICE "/dev/ttyAMA0" // urzadzenie UART
 #define UART_BAUDRATE 9600          // predkosc transmisji
 
 // Debugowanie [1 - DEBUG ON / 0 - DEBUG OFF]
