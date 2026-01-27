@@ -16,7 +16,7 @@ int main(void)
 
     int uart_file_desc; // deskryptor pliku UART
     char buffor[64]; // buffor na dane z UART
-    kierunek_t kierunek = {0, 0}; // struktura przechowujace kierunek i zmienną strzał
+    kierunek_t kierunek = {0, 0, 0}; // struktura przechowujace kierunek i zmienną strzał
 
 
     uart_file_desc = uart_init(UART_DEVICE, UART_BAUDRATE); // inicjalizacja UART (otwarcie urzadzenia i ustawienie predkoscji transmisji)
