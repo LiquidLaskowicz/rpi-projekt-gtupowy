@@ -1,6 +1,5 @@
 // Obsluga portu szeregowego
 
-#define _POSIX_C_SOURCE 199309L
 #include "uart.h"
 #include "config.h"
 

@@ -1,7 +1,7 @@
 # Makefile
 
 CC      = gcc
-CFLAGS  = -Wall -Wextra -std=c11 -Iinclude
+CFLAGS  = -Wall -Wextra -std=c11 -Iinclude -D_POSIX_C_SOURCE=200809L
 LDFLAGS = -lgpiod
 
 TARGET  = app
