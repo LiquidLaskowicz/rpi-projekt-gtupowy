@@ -7,6 +7,8 @@
 #include <pthread.h>
 #include <unistd.h>
 
+#define _POSIX_C_SOURCE 199309L
+
 static struct gpiod_chip *chip;
 
 // Kierunek
@@ -28,6 +30,7 @@ static int running = 1;
 // Generowanie krokow
 static void *stepper_thread(void *arg)
 {
+    (void)arg;
     int delay_us = 1000000 / (STEP_FREQ_HZ * 2);
 
     while (running)

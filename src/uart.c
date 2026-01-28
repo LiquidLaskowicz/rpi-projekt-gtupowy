@@ -10,6 +10,8 @@
 #include <fcntl.h>
 #include <errno.h>
 
+#define _POSIX_C_SOURCE 199309L
+
 // Konwersja predkosci transmisji na flage do konfiguracji portu szeregowego
 static speed_t baud_to_flag(int baudrate)
 {
