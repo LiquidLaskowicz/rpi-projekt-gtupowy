@@ -20,7 +20,7 @@ static speed_t baud_to_flag(int baudrate)
         case 38400: return B38400;
         case 57600: return B57600;
         case 115200: return B115200;
-        default: return B115200;
+        default: return B9600;
     }
 }
 
@@ -79,7 +79,7 @@ int uart_czytaj_linie(int file_desc, char *buffor, int max_length)
     while (i < max_length - 1) // -1 bo jeszcze znak \0 na koncu
     {
         int n = read(file_desc, &c, 1); // proba odczytu 1 znaku
-        if (n > 0) // jesli cos przyszlo \n jest koncem linii, jesli nie to dopsisz do bufora
+        if (n > 0) // jesli cos przyszlo \n jest koncem linii, jesli nie to dopisz do bufora
         {
             if (c == '\n')
                 break;

@@ -5,7 +5,7 @@
 
 // Nazwa i wersja
 #define APP_NAME "projekt_grupowy"
-#define APP_VERSION "0.1.0"
+#define APP_VERSION "0.3"
 
 // UART
 #define UART_DEVICE "/dev/ttyAMA0" // urzadzenie UART
@@ -21,5 +21,18 @@
 #else
     #define DEBUG_PRINT(fmt, ...)
 #endif
+
+// Sterownaie silnikami
+#define GPIO_CHIP_NAME "gpiochip0"
+#define STEP_FREQ_HZ 100
+
+#define PIN_DIR_X 17
+#define PIN_STEP_X  27
+
+#define PIN_DIR_Y1 23
+#define PIN_STEP_Y1 24
+
+#define PIN_DIR_Y2 5
+#define PIN_STEP_Y2 6
 
 #endif
