@@ -5,7 +5,17 @@
 
 #include <gpiod.h>
 #include <pthread.h>
-#include <unistd.h>
+#include <time.h>
+#include <errno.h>
+
+static inline void sleep_us(long us)
+{
+    struct timespec ts;
+    ts.tv_sec  = us / 1000000;
+    ts.tv_nsec = (us % 1000000) * 1000;
+    while (nanosleep(&ts, &ts) == -1 && errno == EINTR);
+}
+
 
 static struct gpiod_chip *chip;
 
@@ -42,7 +52,7 @@ static void *stepper_thread(void *arg)
             gpiod_line_set_value(step_y2, 1);
         }
 
-        usleep(delay_us);
+        sleep_us(delay_us);
 
         // STEP LOW
         if (move_x)
@@ -53,7 +63,7 @@ static void *stepper_thread(void *arg)
             gpiod_line_set_value(step_y2, 0);
         }
 
-        usleep(delay_us);
+        sleep_us(delay_us);
     }
     return NULL;
 }
@@ -115,5 +125,6 @@ void set_move_y(int enable)
 void control_close(void)
 {
     running = 0;
+    pthread_join(step_thread, NULL);
     gpiod_chip_close(chip);
 }

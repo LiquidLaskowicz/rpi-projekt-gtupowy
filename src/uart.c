@@ -9,6 +9,16 @@
 #include <termios.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <time.h>
+
+static inline void sleep_us(long us)
+{
+    struct timespec ts;
+    ts.tv_sec  = us / 1000000;
+    ts.tv_nsec = (us % 1000000) * 1000;
+    while (nanosleep(&ts, &ts) == -1 && errno == EINTR);
+}
+
 
 // Konwersja predkosci transmisji na flage do konfiguracji portu szeregowego
 static speed_t baud_to_flag(int baudrate)
@@ -88,7 +98,7 @@ int uart_czytaj_linie(int file_desc, char *buffor, int max_length)
         }
         else
         {
-            usleep(1000);
+            sleep_us(1000);
         } // gdy nic nie przyszlo poczekaj 1 ms
     }
 
