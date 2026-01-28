@@ -1,13 +1,12 @@
 // Sterowanie silnikami
 
+#define _POSIX_C_SOURCE 199309L
 #include "control.h"
 #include "config.h"
 
 #include <gpiod.h>
 #include <pthread.h>
 #include <unistd.h>
-
-#define _POSIX_C_SOURCE 199309L
 
 static struct gpiod_chip *chip;
 
