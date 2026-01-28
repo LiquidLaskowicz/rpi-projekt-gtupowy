@@ -2,7 +2,7 @@
 
 CC      = gcc
 CFLAGS  = -Wall -Wextra -std=c11 -Iinclude
-LDFLAGS =
+LDFLAGS = -lgpiod
 
 TARGET  = app
 SRC_DIR = src
