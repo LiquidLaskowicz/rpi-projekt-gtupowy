@@ -24,7 +24,7 @@
 
 // Sterownaie silnikami
 #define GPIO_CHIP_NAME "gpiochip0"
-#define STEP_FREQ_HZ 100
+#define STEP_FREQ_HZ 400
 
 #define PIN_DIR_X 17
 #define PIN_STEP_X  27
