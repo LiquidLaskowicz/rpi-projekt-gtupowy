@@ -9,7 +9,8 @@
 
 // UART
 #define UART_DEVICE "/dev/ttyAMA0" // urzadzenie UART
-#define UART_BAUDRATE 9600          // predkosc transmisji
+#define UART_BAUDRATE B9600          // predkosc transmisji
+#define BAUDRATE_SPEED_VALUE 9600    // predkosc do wyswietlania w debugu
 
 // Debugowanie [1 - DEBUG ON / 0 - DEBUG OFF]
 #define DEBUG 1
@@ -24,15 +25,15 @@
 
 // Sterownaie silnikami
 #define GPIO_CHIP_NAME "gpiochip0"
-#define STEP_FREQ_HZ 400
+#define STEP_FREQ_START 50
+#define STEP_FREQ_MAX   400
+#define ACCEL_HZ_PER_S  200
+
 
 #define PIN_DIR_X 17
 #define PIN_STEP_X  27
 
-#define PIN_DIR_Y1 23
-#define PIN_STEP_Y1 24
-
-#define PIN_DIR_Y2 5
-#define PIN_STEP_Y2 6
+#define PIN_DIR_Y 5
+#define PIN_STEP_Y 6
 
 #endif

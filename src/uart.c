@@ -11,6 +11,8 @@
 #include <errno.h>
 #include <time.h>
 
+static const speed_t BAUDRATE = UART_BAUDRATE;
+
 static inline void sleep_us(long us)
 {
     struct timespec ts;
@@ -19,24 +21,9 @@ static inline void sleep_us(long us)
     while (nanosleep(&ts, &ts) == -1 && errno == EINTR);
 }
 
-
-// Konwersja predkosci transmisji na flage do konfiguracji portu szeregowego
-static speed_t baud_to_flag(int baudrate)
-{
-    switch (baudrate)
-    {
-        case 9600: return B9600;
-        case 19200: return B19200;
-        case 38400: return B38400;
-        case 57600: return B57600;
-        case 115200: return B115200;
-        default: return B9600;
-    }
-}
-
 // Inicjalizacja UART (otwiera port, konfiguruje go, zwraca deskryptor pliku)
 
-int uart_init(const char *device, int baudrate)
+int uart_init(const char *device)
 {
     int file_desc = open(device, O_RDWR | O_NOCTTY | O_NDELAY);
     // O_RDWR - odczyt i zapis
@@ -52,8 +39,8 @@ int uart_init(const char *device, int baudrate)
     struct termios opcje; // konfiguracja termios czyli ustawienia portu szeregowego
 
     tcgetattr(file_desc, &opcje);                // pobiera aktualne ustawienia UART
-    cfsetispeed(&opcje, baud_to_flag(baudrate)); // ustawia predkosc wejsciowa
-    cfsetospeed(&opcje, baud_to_flag(baudrate)); // ustawia predkosc wyjsciowa
+    cfsetispeed(&opcje, BAUDRATE); // ustawia predkosc wejsciowa
+    cfsetospeed(&opcje, BAUDRATE); // ustawia predkosc wyjsciowa
 
     opcje.c_cflag |= (CLOCAL | CREAD);
     // CLOCAL - ignoruj sygnaly modemu
@@ -75,7 +62,7 @@ int uart_init(const char *device, int baudrate)
     tcsetattr(file_desc, TCSANOW, &opcje);
     // zastosowanie ustawien natychmiast
 
-    DEBUG_PRINT("UART zainicjalizowany (%s, %d baud)", device, baudrate);
+    DEBUG_PRINT("UART zainicjalizowany (%s, %d baud)", device, BAUDRATE_SPEED_VALUE);
     return file_desc;
 }
 

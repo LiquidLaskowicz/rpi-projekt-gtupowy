@@ -21,53 +21,96 @@ static struct gpiod_chip *chip;
 
 // Kierunek
 static struct gpiod_line *dir_x;
-static struct gpiod_line *dir_y1;
-static struct gpiod_line *dir_y2;
+static struct gpiod_line *dir_y;
 
 // Ruch
 static struct gpiod_line *step_x;
-static struct gpiod_line *step_y1;
-static struct gpiod_line *step_y2;
+static struct gpiod_line *step_y;
 
 static volatile int move_x = 0;
 static volatile int move_y = 0;
 
+static volatile int current_freq_x = STEP_FREQ_START;
+static volatile int current_freq_y = STEP_FREQ_START;
+
+static volatile int target_freq_x = STEP_FREQ_MAX;
+static volatile int target_freq_y = STEP_FREQ_MAX;
+
+
 static pthread_t step_thread;
 static int running = 1;
 
-// Generowanie krokow
 static void *stepper_thread(void *arg)
 {
     (void)arg;
-    int delay_us = 1000000 / (STEP_FREQ_HZ * 2);
 
     while (running)
     {
-        // STEP HIGH
+        int did_step = 0;
+
+        // Os X
         if (move_x)
+        {
+            int delay_x = 1000000 / (current_freq_x * 2);
+
             gpiod_line_set_value(step_x, 1);
-
-        if (move_y) {
-            gpiod_line_set_value(step_y1, 1);
-            gpiod_line_set_value(step_y2, 1);
-        }
-
-        sleep_us(delay_us);
-
-        // STEP LOW
-        if (move_x)
+            sleep_us(delay_x);
             gpiod_line_set_value(step_x, 0);
+            sleep_us(delay_x);
 
-        if (move_y) {
-            gpiod_line_set_value(step_y1, 0);
-            gpiod_line_set_value(step_y2, 0);
+            int accel_step_x = ACCEL_HZ_PER_S * delay_x * 2 / 1000000;
+            if (accel_step_x < 1) accel_step_x = 1;
+
+            if (current_freq_x < target_freq_x)
+            {
+                current_freq_x += accel_step_x;
+                if (current_freq_x > target_freq_x)
+                    current_freq_x = target_freq_x;
+            }
+
+            did_step = 1;
+        }
+        else
+        {
+            current_freq_x = STEP_FREQ_START;
         }
 
-        sleep_us(delay_us);
+        // Os Y
+        if (move_y)
+        {
+            int delay_y = 1000000 / (current_freq_y * 2);
+
+            gpiod_line_set_value(step_y, 1);
+            sleep_us(delay_y);
+            gpiod_line_set_value(step_y, 0);
+            sleep_us(delay_y);
+
+            int accel_step_y = ACCEL_HZ_PER_S * delay_y * 2 / 1000000;
+            if (accel_step_y < 1) accel_step_y = 1;
+
+            if (current_freq_y < target_freq_y)
+            {
+                current_freq_y += accel_step_y;
+                if (current_freq_y > target_freq_y)
+                    current_freq_y = target_freq_y;
+            }
+
+            did_step = 1;
+        }
+        else
+        {
+            current_freq_y = STEP_FREQ_START;
+        }
+
+        // Nic sie nie rusza
+        if (!did_step)
+        {
+            sleep_us(1000);
+        }
     }
+
     return NULL;
 }
-
 
 // Inicjalizacja
 int control_init(void)
@@ -77,20 +120,14 @@ int control_init(void)
     dir_x   = gpiod_chip_get_line(chip, PIN_DIR_X);
     step_x  = gpiod_chip_get_line(chip, PIN_STEP_X);
 
-    dir_y1  = gpiod_chip_get_line(chip, PIN_DIR_Y1);
-    step_y1 = gpiod_chip_get_line(chip, PIN_STEP_Y1);
-
-    dir_y2  = gpiod_chip_get_line(chip, PIN_DIR_Y2);
-    step_y2 = gpiod_chip_get_line(chip, PIN_STEP_Y2);
+    dir_y  = gpiod_chip_get_line(chip, PIN_DIR_Y);
+    step_y = gpiod_chip_get_line(chip, PIN_STEP_Y);
 
     gpiod_line_request_output(dir_x,  "DIR_X",  0);
     gpiod_line_request_output(step_x, "STEP_X", 0);
 
-    gpiod_line_request_output(dir_y1,  "DIR_Y1",  0);
-    gpiod_line_request_output(step_y1, "STEP_Y1", 0);
-
-    gpiod_line_request_output(dir_y2,  "DIR_Y2",  0);
-    gpiod_line_request_output(step_y2, "STEP_Y2", 0);
+    gpiod_line_request_output(dir_y,  "DIR_Y",  0);
+    gpiod_line_request_output(step_y, "STEP_Y", 0);
 
     pthread_create(&step_thread, NULL, stepper_thread, NULL);
 
@@ -101,14 +138,14 @@ int control_init(void)
 // Kierunek
 void set_dir_x(int dir)
 {
+    current_freq_x = STEP_FREQ_START;
     gpiod_line_set_value(dir_x, dir > 0);
 }
 
 void set_dir_y(int dir)
 {
-    int v = (dir > 0);
-    gpiod_line_set_value(dir_y1, v);
-    gpiod_line_set_value(dir_y2, v);
+    current_freq_y = STEP_FREQ_START;
+    gpiod_line_set_value(dir_y, dir > 0);
 }
 
 // Ruch

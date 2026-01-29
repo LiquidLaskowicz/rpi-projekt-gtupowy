@@ -18,7 +18,7 @@ int main(void)
     char buffor[64]; // buffor na dane z UART
     kierunek_t kierunek = {0, 0, 0}; // struktura przechowujace kierunek i zmienną strzał
 
-    uart_file_desc = uart_init(UART_DEVICE, UART_BAUDRATE); // inicjalizacja UART (otwarcie urzadzenia i ustawienie predkosci transmisji)
+    uart_file_desc = uart_init(UART_DEVICE); // inicjalizacja UART (otwarcie urzadzenia i ustawienie predkosci transmisji)
 
     if (uart_file_desc < 0)
     {
