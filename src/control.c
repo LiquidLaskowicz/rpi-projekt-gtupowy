@@ -138,7 +138,7 @@ int control_init(void)
 // Kierunek
 void set_dir_x(int dir)
 {
-    current_freq_x = STEP_FREQ_START;       // zresetowanie predkosci do poczatkowej zeby nie szarpalo przy zmianie kierunku
+    current_freq_x = STEP_FREQ_START;       // zresetowanie predkosci do poczatkowej zeby nie szarpalo przy zmianie kierunku // w sumie to nie jestesmy chyba na tyle szybcy zeby zmienic kierunek bez przejscia przez zero najpierw ale to juz dla automatu bedzie
     gpiod_line_set_value(dir_x, dir > 0);   // ustawienie pinu kierunku x
 }
 
