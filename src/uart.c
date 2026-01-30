@@ -11,14 +11,14 @@
 #include <errno.h>
 #include <time.h>
 
-static const speed_t BAUDRATE = UART_BAUDRATE;
+static const speed_t BAUDRATE = UART_BAUDRATE; // static ze tylko w tym pliku ta funkcja obowiazuje
 
-static inline void sleep_us(long us)
+static inline void sleep_us(long us) // inline oznacza ze kompilator w miejsce wywolania tej funkcji wrzuca ten kod caly a nie odwoluje sie do niej i to jest szybsze
 {
     struct timespec ts;
     ts.tv_sec  = us / 1000000;
     ts.tv_nsec = (us % 1000000) * 1000;
-    while (nanosleep(&ts, &ts) == -1 && errno == EINTR);
+    while (nanosleep(&ts, &ts) == -1 && errno == EINTR); // jesli przyjdzie przerwanie to w ts zapisany zoastanie pozostaly czas snu i on dospi tyle ile mu zostalo po obsludze przerwania
 }
 
 // Inicjalizacja UART (otwiera port, konfiguruje go, zwraca deskryptor pliku)
@@ -32,13 +32,13 @@ int uart_init(const char *device)
 
     if (file_desc < 0)
     {
-        DEBUG_PRINT("UART otwarcie nie powiodlo sie: %s", strerror(errno));
+        DEBUG_PRINT("UART otwarcie nie powiodlo sie: %s", strerror(errno)); // errno to globalna zmienna ktora kernel sam ustawi na wystapiony blad a strerror zmieni to na czytelny string
         return -1;
     } // obsluga bledu systemowego
 
     struct termios opcje; // konfiguracja termios czyli ustawienia portu szeregowego
 
-    tcgetattr(file_desc, &opcje);                // pobiera aktualne ustawienia UART
+    tcgetattr(file_desc, &opcje);  // pobiera aktualne ustawienia UART
     cfsetispeed(&opcje, BAUDRATE); // ustawia predkosc wejsciowa
     cfsetospeed(&opcje, BAUDRATE); // ustawia predkosc wyjsciowa
 
@@ -46,10 +46,10 @@ int uart_init(const char *device)
     // CLOCAL - ignoruj sygnaly modemu
     // CREAD - wlacz odbiornik
     
-    // standard 8N1
+    // standard 8N1 [format ramki]
     opcje.c_cflag &= ~PARENB; // brak parzystosci
     opcje.c_cflag &= ~CSTOPB; //  bit stopu
-    opcje.c_cflag &= ~CSIZE;
+    opcje.c_cflag &= ~CSIZE;  // czyszczenie maski dlugosci slowa
     opcje.c_cflag |= CS8;     // 8 bitow danych
 
     opcje.c_lflag &= ~(ICANON | ECHO | ECHOE | ISIG);
@@ -57,7 +57,7 @@ int uart_init(const char *device)
     opcje.c_iflag &= ~(IXON | IXOFF | IXANY);
     // wylacza programowa kontrole przeplywu
     opcje.c_oflag &= ~OPOST;
-    // brak obrobki wyjscia
+    // brak obrobki wyjscia czyli nie dodawane sa bity konca linii np itd
 
     tcsetattr(file_desc, TCSANOW, &opcje);
     // zastosowanie ustawien natychmiast
@@ -90,7 +90,7 @@ int uart_czytaj_linie(int file_desc, char *buffor, int max_length)
     }
 
     // zakonczenie stringa i zwrot dlugosci
-    buffor[i] = '\0';
+    buffor[i] = '\0'; // poprawne zakonczenie stringa
     return i;
 }
 

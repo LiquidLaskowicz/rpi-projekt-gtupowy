@@ -15,14 +15,14 @@ int main(void)
     DEBUG_PRINT("This metal gear is pretty solid");
 
     int uart_file_desc; // deskryptor pliku UART
-    char buffor[64]; // buffor na dane z UART
-    kierunek_t kierunek = {0, 0, 0}; // struktura przechowujace kierunek i zmienną strzał
+    char buffor[64]; // buffor na dane z UART  // 64 bajty to w sumie overkill int ma 2 to wystarczy dla pewnosci 16 ale zostawie na razie
+    kierunek_vector kierunek = {0, 0, 0}; // struktura przechowujace kierunek i zmienną strzał
 
     uart_file_desc = uart_init(UART_DEVICE); // inicjalizacja UART (otwarcie urzadzenia i ustawienie predkosci transmisji)
 
     if (uart_file_desc < 0)
     {
-        DEBUG_PRINT("UART inicjalizacja nieudana");
+        DEBUG_PRINT("Blad inicjalizacji UART");
         return 1;
     } // sprawdzenie czy UART uruchomil sie poprawnie
 
@@ -32,7 +32,7 @@ int main(void)
     return 1;
     } // sprawdzenie czy uruchomil sie onterfejs GPIO
 
-    DEBUG_PRINT("Oczekiwanie na dane z ESP...");
+    DEBUG_PRINT("Oczekiwanie na dane z ESP");
 
     while(1) //glowna petla programu
     {
@@ -72,5 +72,6 @@ int main(void)
 
     uart_close(uart_file_desc); // generalnie to program dziala w petli nieskonczonej
                                 // wiec UART sie nie zamknie chyba ze dodac funkcje do tego
+    control_close()             // tutaj to samo moze dla picu dodac cos takiego ze jak jakis blad wyrzuci to ma byc wyjsice z glownej petli i wywolanie tych funkcji
     return 0;
 }
