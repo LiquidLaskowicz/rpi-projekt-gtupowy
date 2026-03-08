@@ -8,6 +8,25 @@
 #include "control.h"
 #include "uart.h"
 
+#include <time.h>
+#include <errno.h>
+
+volatile work_mode_t WORK_MODE = WORK_MODE_MANUAL;
+
+void set_work_mode(work_mode_t mode)
+{
+    WORK_MODE = mode;
+    DEBUG_PRINT("Zmiana trybu na: %d", mode);
+}
+
+static inline void sleep_us(long us)
+{
+    struct timespec ts;
+    ts.tv_sec  = us / 1000000;
+    ts.tv_nsec = (us % 1000000) * 1000;
+    while (nanosleep(&ts, &ts) == -1 && errno == EINTR);
+}
+
 int main(void)
 {
     printf("%s v%s\n", APP_NAME, APP_VERSION);
@@ -15,8 +34,8 @@ int main(void)
     DEBUG_PRINT("This metal gear is pretty solid");
 
     int uart_file_desc; // deskryptor pliku UART
-    char buffor[64]; // buffor na dane z UART  // 64 bajty to w sumie overkill int ma 2 to wystarczy dla pewnosci 16 ale zostawie na razie
-    kierunek_vector kierunek = {0, 0, 0}; // struktura przechowujace kierunek i zmienną strzał
+    char buffor[32]; // buffor na dane z UART  // 64 bajty to w sumie overkill int ma 2 to wystarczy dla pewnosci 16 ale zostawie na razie
+    kierunek_vector kierunek = {0, 0, 0, 0}; // struktura przechowujace kierunek i zmienną strzał
 
     uart_file_desc = uart_init(UART_DEVICE); // inicjalizacja UART (otwarcie urzadzenia i ustawienie predkosci transmisji)
 
@@ -37,41 +56,57 @@ int main(void)
     while(1) //glowna petla programu
     {
 
-        int length = uart_czytaj_linie(uart_file_desc, buffor, sizeof(buffor)); // czyta jedna linie z UART, zapisuje do bufora i zwraca liczbe odczytanych znakow
-
-        if (length <= 0) // sprawdzenie czy cos odebrano
+        if(WORK_MODE == WORK_MODE_MANUAL)
         {
-            continue;
-        }
+            int length = uart_czytaj_linie(uart_file_desc, buffor, sizeof(buffor)); // czyta jedna linie z UART, zapisuje do bufora i zwraca liczbe odczytanych znakow
 
-        // Usuniecie znakow nowej linii
-        buffor[strcspn(buffor, "\r\n")] = 0;
-    
-        int x, y, strzal;
+            if (length <= 0) // sprawdzenie czy cos odebrano
+            {
+                continue;
+            }
+
+            // Usuniecie znakow nowej linii
+            buffor[strcspn(buffor, "\r\n")] = 0;
         
-        if (sscanf(buffor, "%d,%d,%d", &x, &y, &strzal) == 3)
-        {
-            kierunek.x = x;
-            kierunek.y = y;
-            kierunek.strzal = strzal;
+            int x, y, strzal, work_mode;
 
-            set_dir_x(kierunek.x);
-            set_dir_y(kierunek.y);
+            if (sscanf(buffor, "%d,%d,%d,%d", &x, &y, &strzal, &work_mode) == 4)
+            {
+                kierunek.x = x;
+                kierunek.y = y;
+                kierunek.strzal = strzal;
+                kierunek.work_mode = work_mode;
 
-            set_move_x(kierunek.x);
-            set_move_y(kierunek.y);
+                set_dir_x(kierunek.x);
+                set_dir_y(kierunek.y);
 
-            DEBUG_PRINT("Kierunek: X=%d Y=%d Strzal=%d", kierunek.x, kierunek.y, kierunek.strzal);
+                set_move_x(kierunek.x != 0);
+                set_move_y(kierunek.y != 0);
+
+                set_shoot(kierunek.strzal);
+
+                if(kierunek.work_mode != WORK_MODE)
+                set_work_mode(kierunek.work_mode);
+
+                DEBUG_PRINT("Kierunek: X=%d Y=%d Strzal=%d Mode=%d", kierunek.x, kierunek.y, kierunek.strzal, kierunek.work_mode);
+            }
+            else
+            {
+                DEBUG_PRINT("Nieprawidlowe dane: %s", buffor);
+            }
         }
-        else
+        else if(WORK_MODE == WORK_MODE_AUTO)
         {
-            DEBUG_PRINT("Nieprawidlowe dane: %s", buffor);
+            //何も
         }
+
         
     }
 
     uart_close(uart_file_desc); // generalnie to program dziala w petli nieskonczonej
                                 // wiec UART sie nie zamknie chyba ze dodac funkcje do tego
-    control_close()             // tutaj to samo moze dla picu dodac cos takiego ze jak jakis blad wyrzuci to ma byc wyjsice z glownej petli i wywolanie tych funkcji
+    control_close();             // tutaj to samo moze dla picu dodac cos takiego ze jak jakis blad wyrzuci to ma byc wyjsice z glownej petli i wywolanie tych funkcji
     return 0;
 }
+
+// moze zrobic tak zeby wejscie w jeden tryb pracy zamykalo rownolegly watek drugiego trybu ale nwm

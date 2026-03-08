@@ -1,4 +1,4 @@
-// Sterowanie silnikami
+// Sterowanie silnikami + strzal
 
 #include "control.h"
 #include "config.h"
@@ -15,7 +15,6 @@ static inline void sleep_us(long us)
     ts.tv_nsec = (us % 1000000) * 1000;
     while (nanosleep(&ts, &ts) == -1 && errno == EINTR);
 }
-
 
 static struct gpiod_chip *chip; // wskaznik na strukture reprezentujaca urzadzenie GPIO w razberce
 
@@ -36,13 +35,23 @@ static volatile int current_freq_y = STEP_FREQ_START;
 static volatile int target_freq_x = STEP_FREQ_MAX;
 static volatile int target_freq_y = STEP_FREQ_MAX;
 
+static volatile int shoot = 0;
+static volatile int shoot_flag = 0;
+static int shoot_pressed = 0;
+static struct timespec last_shot_time = {0};
+
+static long diff_ms(struct timespec a, struct timespec b)
+{
+    return (a.tv_sec - b.tv_sec) * 1000 +
+           (a.tv_nsec - b.tv_nsec) / 1000000;
+}
 
 static pthread_t step_thread; // zmienna watku
 static int running = 1;
 
 static void *praca_silnikow(void *arg) // poczatek watku obslugi ruchu // void* oznacza ze moze zwrocic cokolwiek albo NULL
 {
-    (void)arg; // nieuzywany parametr
+    (void)arg; // nieuzywany parametr zeby warninga przy kompilacji usunac
 
     while (running)
     {
@@ -157,6 +166,34 @@ void set_move_x(int enable) // ustawienie flagi move
 void set_move_y(int enable)
 {
     move_y = (enable != 0);
+}
+
+void set_shoot(int enable)
+{
+    struct timespec now;
+    clock_gettime(CLOCK_MONOTONIC, &now);
+
+    if (enable && !shoot_pressed)
+    {
+        if (diff_ms(now, last_shot_time) >= SHOOT_COOLDOWN_MS)
+        {
+            shoot_flag = 1;
+            last_shot_time = now;
+        }
+
+        shoot_pressed = 1;
+    }
+    else if (!enable)
+    {
+        shoot_pressed = 0;
+    }
+}
+
+int get_shoot_flag(void)
+{
+    int val = shoot_flag;
+    shoot_flag = 0;
+    return val;
 }
 
 void control_close(void)

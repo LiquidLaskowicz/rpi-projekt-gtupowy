@@ -36,4 +36,17 @@
 #define PIN_DIR_Y 5
 #define PIN_STEP_Y 6
 
+#define SHOOT_COOLDOWN_MS 300
+
+typedef enum
+{
+    WORK_MODE_MANUAL = 0,
+    WORK_MODE_AUTO = 1
+
+} work_mode_t;
+
+extern volatile work_mode_t WORK_MODE;
+
+void set_work_mode(work_mode_t mode);
+
 #endif

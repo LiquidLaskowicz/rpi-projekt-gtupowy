@@ -8,6 +8,7 @@ typedef struct
     int x;
     int y;
     int strzal;
+    int work_mode;
 } kierunek_vector;
 
 int control_init(void);
@@ -17,6 +18,10 @@ void set_move_x(int enable);
 
 void set_dir_y(int dir);
 void set_move_y(int enable);
+
+void set_shoot(int enable);
+
+int get_shoot_flag(void);
 
 void control_close(void);
 
