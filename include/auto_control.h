@@ -7,3 +7,5 @@ typedef struct
     int y;
     int strzal;
 } kierunek_vector_automat;
+
+#endif
