@@ -8,7 +8,7 @@ typedef struct
     int x;
     int y;
     int strzal;
-    int work_mode;
+    work_mode_t work_mode;
 } kierunek_vector;
 
 int control_init(void);

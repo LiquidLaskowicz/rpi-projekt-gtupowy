@@ -68,14 +68,15 @@ int main(void)
             // Usuniecie znakow nowej linii
             buffor[strcspn(buffor, "\r\n")] = 0;
         
-            int x, y, strzal, work_mode;
+            int x, y, strzal;
+            work_mode_t mode;
 
-            if (sscanf(buffor, "%d,%d,%d,%d", &x, &y, &strzal, &work_mode) == 4)
+            if (sscanf(buffor, "%d,%d,%d,%d", &x, &y, &strzal, (int*)&mode) == 4)
             {
                 kierunek.x = x;
                 kierunek.y = y;
                 kierunek.strzal = strzal;
-                kierunek.work_mode = work_mode;
+                kierunek.work_mode = mode;
 
                 set_dir_x(kierunek.x);
                 set_dir_y(kierunek.y);
