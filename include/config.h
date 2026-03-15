@@ -40,8 +40,8 @@
 
 typedef enum
 {
-    WORK_MODE_MANUAL = 0,
-    WORK_MODE_AUTO = 1
+    WORK_MODE_MANUAL = 1,
+    WORK_MODE_AUTO = -1
 
 } work_mode_t;
 
