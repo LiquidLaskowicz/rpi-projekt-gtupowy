@@ -1,6 +1,5 @@
 #include "control.h"
 #include "config.h"
-
 #include <math.h>
 
 // ================= PARAMETRY =================

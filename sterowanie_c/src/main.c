@@ -7,7 +7,6 @@
 #include "config.h"
 #include "control.h"
 #include "uart.h"
-#include "calmman.h"
 
 #include <time.h>
 #include <errno.h>
